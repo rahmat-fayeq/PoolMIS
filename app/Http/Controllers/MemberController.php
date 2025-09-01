@@ -239,7 +239,8 @@ class MemberController extends Controller
             'dailyPlan',
             'sessionalVisits',
             'monthlyVisits',
-            'services.service'
+            'services.service',
+            'dailyVisit',
         ])->findOrFail($id);
 
         return view('members.details', compact('member'));

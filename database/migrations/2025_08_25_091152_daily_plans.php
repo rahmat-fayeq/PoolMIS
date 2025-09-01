@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('daily_plans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('member_id')->constrained()->restrictOnDelete();
-            $table->datetimes('date');
+            $table->dateTime('date');
             $table->decimal('price', 8, 2);
             $table->string('lock_number');
             $table->timestamps();

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('service_id')->constrained()->restrictOnDelete();
             $table->integer('quantity')->default(1);
             $table->decimal('total_price', 8, 2);
-            $table->date('service_date');
+            $table->dateTime('service_date');
             $table->timestamps();
         });
     }

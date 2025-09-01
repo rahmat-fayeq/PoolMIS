@@ -41,8 +41,8 @@
                 <tr>
                     <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
                     <td class="border px-4 py-2 text-center">{{ $visit->lock_number }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time->format('Y/m/d') }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time->format('h:i:s A') }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -50,12 +50,25 @@
                 </tr>    
                 @endforelse
             @elseif($member->type == 'monthly')
-                @forelse($member->monthlyVisits as $visit)
+                @forelse($member->monthlyVisits as $index=>$visit)
                 <tr>
                     <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
                     <td class="border px-4 py-2 text-center">{{ $visit->lock_number }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time }}</td>
-                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time->format('Y/m/d') }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->visit_time->format('h:i:s A') }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4">No visit</td>
+                </tr>
+                @endforelse
+            @elseif($member->type == 'daily')
+                @forelse($member->dailyVisit as $index=>$visit)
+                <tr>
+                    <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->lock_number }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->date->format('Y/m/d') }}</td>
+                    <td class="border px-4 py-2 text-center">{{ $visit->date->format('h:i:s A') }}</td>
                 </tr>
                 @empty
                 <tr>
@@ -80,7 +93,7 @@
             @forelse($member->services as $index=>$ms)
             <tr>
                 <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
-                <td class="border px-4 py-2 text-center">{{ $ms->service_date }}</td>
+                <td class="border px-4 py-2 text-center">{{ $ms->service_date->format('Y/m/d h:i:s A') }}</td>
                 <td class="border px-4 py-2 text-center">{{ $ms->service->name }}</td>
                 <td class="border px-4 py-2 text-center">{{ $ms->quantity }}</td>
                 <td class="border px-4 py-2 text-center">{{ $ms->service->price }} <small>Af</small></td>

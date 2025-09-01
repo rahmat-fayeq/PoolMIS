@@ -20,6 +20,12 @@ class Member extends Model
     {
         return $this->hasOne(DailyPlan::class);
     }
+
+    public function dailyVisit()
+    {
+        return $this->hasMany(DailyPlan::class);
+    }
+
     public function services()
     {
         return $this->hasMany(MemberService::class);
