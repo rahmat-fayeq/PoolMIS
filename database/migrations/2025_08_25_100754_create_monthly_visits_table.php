@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('monthly_visits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained()->restrictOnDelete();
+            $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->dateTime('visit_time');
             $table->string('lock_number');
             $table->timestamps();

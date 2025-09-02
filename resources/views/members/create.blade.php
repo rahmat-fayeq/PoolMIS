@@ -1,15 +1,5 @@
 <x-layouts.app :title="__('Add Member')">
 
-    @if ($errors->any())
-        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800">
-            <ul class="list-disc pl-5">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
     <form action="{{ route('members.store') }}" method="POST"
         class="max-w-lg mx-auto bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
         @csrf
@@ -19,8 +9,8 @@
             <select name="type" id="member-type"
                 class="w-full px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 <option value="daily" @if (old('type') == 'daily') selected @endif>Daily</option>
-                <option value="sessional" @if (old('type') == 'sessional') selected @endif>Sessional</option>
                 <option value="monthly" @if (old('type') == 'monthly') selected @endif>Monthly</option>
+                <option value="sessional" @if (old('type') == 'sessional') selected @endif>Sessional</option>
             </select>
         </div>
 
@@ -28,7 +18,6 @@
         <div id="sessional-fields" style="display:none;">
             <div class="mb-5">
                 <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled/>
-                <x-forms.input type="email" label="Email" name="email" value="{{ old('email') }}" disabled/>
                 <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}" disabled/>
                 <x-forms.input type="number" label="Total Sessions" name="total_sessions"
                     value="{{ old('total_sessions') }}" disabled />
@@ -41,7 +30,6 @@
         <div id="monthly-fields" style="display:none;">
             <div class="mb-5">
                 <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled/>
-                <x-forms.input type="email" label="Email" name="email" value="{{ old('email') }}" disabled/>
                 <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}" disabled/>
                 <x-forms.input type="date" label="Start Date" name="start_date" value="{{ old('start_date') }}"
                     disabled />

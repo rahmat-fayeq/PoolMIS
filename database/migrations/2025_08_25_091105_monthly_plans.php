@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('monthly_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained()->restrictOnDelete();
+            $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date');
             $table->decimal('price', 8, 2);

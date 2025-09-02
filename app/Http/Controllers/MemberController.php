@@ -40,6 +40,10 @@ class MemberController extends Controller
             'monthlyVisits',
             'services.service',
         ])
+            ->when($request->has('search'), function($query) use($request){
+                $query->where('name','LIKE','%'.$request->search.'%')
+                    ->orWhere('phone','LIKE','%'.$request->search.'%');
+            })
             ->where('type', 'monthly')
             ->latest()
             ->paginate()
@@ -60,7 +64,7 @@ class MemberController extends Controller
                 $searchTerm = $request->search;
                 $query->where(function ($query) use ($searchTerm) {
                     $query->orWhereHas('dailyPlan', function ($q) use ($searchTerm) {
-                            $q->where('date', '=', $searchTerm)
+                            $q->where('date', 'LIKE', '%'.$searchTerm.'%')
                                 ->orWhere('lock_number', '=', $searchTerm);
                         });
                 });
@@ -92,6 +96,10 @@ class MemberController extends Controller
             'lock_number' => 'required_if:type,daily|string',
         ]);
 
+        $validator->sometimes('name', 'required|string|min:3|max:255', function ($input) {
+            return $input->type == 'monthly';
+        });
+
         $validator->sometimes(['start_date', 'end_date'], 'required|date', function ($input) {
             return $input->type == 'monthly';
         });
@@ -101,7 +109,7 @@ class MemberController extends Controller
 
         $validator->validate();
 
-        $member = Member::create($request->only('name', 'email', 'phone', 'type'));
+        $member = Member::create($request->only('name','phone', 'type'));
 
         if ($request->type == 'sessional') {
             $member->sessionalPlan()->create([

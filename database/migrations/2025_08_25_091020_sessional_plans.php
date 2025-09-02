@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sessional_plans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained()->restrictOnDelete();
+            $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->integer('total_sessions');
             $table->integer('remaining_sessions');
             $table->decimal('price', 8, 2);

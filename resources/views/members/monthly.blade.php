@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Members')">
 
     <div class="mb-6 flex justify-end items-center">
-        <x-search url="{{ route('members.index') }}" placeholder="Search ..." />
+        <x-search url="{{ route('members.monthly') }}" placeholder="Search ..." />
     </div>
 
     <div class="relative overflow-x-auto">
@@ -15,16 +15,16 @@
                         Name
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Plan Info
+                        Date
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Price
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Event Logs
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Expenses
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Edit
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Delete
@@ -39,23 +39,15 @@
                             {{ ($members->currentPage() - 1) * $members->perPage() + $index + 1 }}
                         </th>
                         <td class="px-6 py-4">
-                            {{ $m->name }}
+                            {{ $m->name }} <br>
+                            {{ $m->phone }}
                         </td>
                         <td class="px-6 py-4">
-                            @if ($m->type === 'sessional' && $m->sessionalPlan)
-                                Total Sessions: {{ $m->sessionalPlan->total_sessions }}<br>
-                                Remaining: {{ $m->sessionalPlan->remaining_sessions }}<br>
-                                Price: {{ number_format($m->sessionalPlan->price, 2) }}
-                            @elseif($m->type === 'monthly' && $m->monthlyPlan)
-                                From: {{ $m->monthlyPlan->start_date }}<br>
-                                To: {{ $m->monthlyPlan->end_date }}<br>
-                                Price: {{ number_format($m->monthlyPlan->price, 2) }}
-                            @elseif($m->type === 'daily' && $m->dailyPlan)
-                                Date: {{ $m->dailyPlan->date }}<br>
-                                Price: {{ number_format($m->dailyPlan->price, 2) }}
-                            @else
-                                <em>No plan assigned.</em>
-                            @endif
+                            From: {{ $m->monthlyPlan->start_date->format('Y-m-d') }}<br>
+                            To: {{ $m->monthlyPlan->end_date->format('Y-m-d') }}
+                        </td>
+                        <td class="px-6 py-4">
+                             {{ number_format($m->monthlyPlan->price, 0) }}
                         </td>
                         <td class="px-6 py-4">
                             <x-button tag="a" href="{{ route('members.monthlyVisit', $m->id) }}" type="primary"
@@ -68,13 +60,6 @@
                                 class="px-3 py-1 rounded inline-flex items-center justify-center">
                                 <i class="fa-regular fa-eye"></i>
                             </x-button>
-                        </td>
-                        <td class="px-6 py-4">
-                            <x-button tag="a" href="{{ route('members.edit', $m->id) }}" type="warning"
-                                class="px-3 py-1 rounded inline-flex items-center justify-center">
-                                <i class="fa-regular fa-pen-to-square"></i>
-                            </x-button>
-
                         </td>
                         <td class="px-6 py-4">
                             <x-delete-item id="{{ $m->id }}" url="{{ route('members.destroy', $m->id) }}" />

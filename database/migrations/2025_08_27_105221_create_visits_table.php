@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('member_id')->constrained()->restrictOnDelete();
+            $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->dateTime('visit_time');
             $table->unsignedInteger('lock_number');
             $table->timestamps();

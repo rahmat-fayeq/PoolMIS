@@ -62,7 +62,8 @@ class MemberLogController extends Controller
     // --- Monthly Visit Logging ---
     public function logMonthlyVisit(Request $request, $memberId)
     {
-        $member = Member::with(['monthlyPlan', 'monthlyVisits'])->findOrFail($memberId);
+        $member = Member::with(['monthlyPlan', 'monthlyVisits'])
+                ->findOrFail($memberId);
 
         if (!$member->monthlyPlan) {
             return back()->with('error', 'No monthly plan assigned.');

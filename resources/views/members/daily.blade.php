@@ -42,7 +42,7 @@
                     {{$m->dailyPlan?->lock_number}}
                 </td>
                 <td class="px-6 py-4">
-                    {{$m->dailyPlan?->date->format('Y/m/d')}}
+                    {{$m->dailyPlan?->date->format('Y-m-d')}}
                 </td>
                 <td class="px-6 py-4">
                     {{$m->dailyPlan?->date->format('h:i:s A')}}

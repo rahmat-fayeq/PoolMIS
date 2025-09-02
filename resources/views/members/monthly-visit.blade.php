@@ -6,17 +6,20 @@
             action="{{ $member->type === 'monthly' ? route('members.monthlyVisit.store', $member->id) : route('members.sessionalVisit.store', $member->id) }}"
             class="flex justify-between items-center">
             @csrf
-
-            <x-forms.input type="number" label="Lock Number" name="lock_number" required />
-            <x-forms.input type="datetime-local" label="Visit Date" name="visit_time" required />
-
-            <x-button type="primary"><i class="fa fa-plus" aria-hidden="true"></i> Add</x-button>
+            <div>
+                <label>Lock Number</label>
+                <x-forms.input type="number" label="" name="lock_number" required />
+            </div>
+            <div class="ml-2">
+                <label> Visit Date & Time</label>
+                <x-forms.input type="datetime-local" label="" name="visit_time" value="{{ now()}}" required />
+            </div>
+            <x-button type="primary" class="mt-5 ml-2"><i class="fa fa-plus" aria-hidden="true"></i> Add</x-button>
         </form>
 
         {{-- Filter Form --}}
-        <form method="GET" action="" class="flex justify-between items-center">
-            <input type="date" name="visit_date" value="{{ request('visit_date') }}" required
-                class="w-full mr-1 px-4 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <form method="GET" action="" class="flex justify-between items-center mt-5">
+            <x-forms.input type="date" label="" name="visit_date" value="{{ now()}}" required />
             <x-button type="info"><i class="fa fa-filter" aria-hidden="true"></i> Filter</x-button>
         </form>
     </div>
@@ -52,7 +55,7 @@
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                         <th class="px-6 py-4">{{ $index + 1 }}</th>
                         <td class="px-6 py-4">{{ $visit->lock_number }}</td>
-                        <td class="px-6 py-4">{{ $visit->visit_time->format('Y/m/d') }}</td>
+                        <td class="px-6 py-4">{{ $visit->visit_time->format('Y-m-d') }}</td>
                         <td class="px-6 py-4">{{ $visit->visit_time->format('h:i:s A') }}</td>
                         <td class="px-6 py-4">
                             <x-delete-item id="{{ $visit->id }}"
