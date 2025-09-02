@@ -59,10 +59,8 @@ class MemberController extends Controller
             ->when($request->has('search'), function ($query) use ($request) {
                 $searchTerm = $request->search;
                 $query->where(function ($query) use ($searchTerm) {
-                    $query->where('name', 'LIKE', '%' . $searchTerm . '%')
-                        ->orWhere('phone', '=', $searchTerm)
-                        ->orWhereHas('dailyPlan', function ($q) use ($searchTerm) {
-                            $q->where('date', 'LIKE', '%' . $searchTerm . '%')
+                    $query->orWhereHas('dailyPlan', function ($q) use ($searchTerm) {
+                            $q->where('date', '=', $searchTerm)
                                 ->orWhere('lock_number', '=', $searchTerm);
                         });
                 });
@@ -85,13 +83,12 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'type' => 'required|in:sessional,monthly,daily',
             'total_sessions' => 'required_if:type,sessional|integer|min:1',
             'price' => 'required_if:type,sessional,monthly,daily|numeric|min:0',
-            'date' => 'required_if:type,daily|date',
             'lock_number' => 'required_if:type,daily|string',
         ]);
 
@@ -120,7 +117,7 @@ class MemberController extends Controller
             ]);
         } elseif ($request->type == 'daily') {
             $member->dailyPlan()->create([
-                'date' => $request->date,
+                'date' => now(),
                 'price' => $request->price,
                 'lock_number' => $request->lock_number,
             ]);
@@ -131,21 +128,9 @@ class MemberController extends Controller
 
     public function destroy(Member $member)
     {
-        if (
-            $member->services()->exists() ||
-            $member->sessionalVisits()->exists() ||
-            $member->monthlyVisits()->exists() ||
-            $member->sessionalPlan()->exists() ||
-            $member->monthlyPlan()->exists() ||
-            $member->dailyPlan()->exists()
-        ) {
-            return redirect()->route('members.index')
-                ->with('error', 'Cannot delete this member because related data exists.');
-        }
-
         $member->delete();
 
-        return redirect()->route('members.index')->with('success', 'Member deleted successfully!');
+        return redirect()->back()->with('success', 'Member deleted successfully!');
     }
 
 
