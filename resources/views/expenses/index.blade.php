@@ -22,8 +22,8 @@
                 <th scope="col" class="px-6 py-3">
                     Amount
                 </th>
-                <th scope="col" class="px-6 py-3" colspan="2">
-                    Actions
+                <th scope="col" class="px-6 py-3">
+                    Delete
                 </th>
             </tr>
         </thead>
@@ -41,14 +41,6 @@
                 </td>
                 <td class="px-6 py-4">
                     {{$data->amount}} <small>Af</small>
-                </td>
-                <td class="px-6 py-4">
-                   <x-button tag="a" href="{{ route('expenses.edit', $data->id) }}" 
-                        type="warning" 
-                        class="px-3 py-1 rounded inline-flex items-center justify-center">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                    </x-button>
-
                 </td>
                 <td class="px-6 py-4">
                     <x-delete-item id="{{ $data->id }}" url="{{ route('expenses.destroy', $data->id) }}" />
