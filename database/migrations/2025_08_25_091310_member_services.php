@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('member_services', function (Blueprint $table) {
             $table->id();
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('service_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('service_id')->nullable()->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
             $table->decimal('total_price', 8, 2);
             $table->dateTime('service_date');

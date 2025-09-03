@@ -93,10 +93,17 @@
             @forelse($member->services as $index=>$ms)
             <tr>
                 <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
-                <td class="border px-4 py-2 text-center">{{ $ms->service_date->format('Y/m/d h:i:s A') }}</td>
-                <td class="border px-4 py-2 text-center">{{ $ms->service->name }}</td>
+                <td class="border px-4 py-2 text-center">{{ $ms->service_date->format('Y/m/d') }}</td>
+                <td class="border px-4 py-2 text-center">{{ $ms->service->name?? 'Total Food' }}</td>
                 <td class="border px-4 py-2 text-center">{{ $ms->quantity }}</td>
-                <td class="border px-4 py-2 text-center">{{ $ms->service->price }} <small>Af</small></td>
+                <td class="border px-4 py-2 text-center">
+                    @if (!empty($ms->service->price))
+                    {{ $ms->service->price }} <small>Af</small>
+                    @else
+                        N/A
+                    @endif
+                   
+                </td>
                 <td class="border px-4 py-2 text-center">{{ $ms->total_price }} <small>Af</small></td>
             </tr>
             @empty

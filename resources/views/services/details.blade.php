@@ -17,8 +17,8 @@
             @forelse($serviceRecords as $index=>$sr)
             <tr>
                 <td class="border px-4 py-2 text-center">{{ $index+1 }}</td>
-                <td class="border px-4 py-2 text-center">{{ $sr->service_date}}</td>
-                <td class="border px-4 py-2 text-center">{{ $sr->member->name }}</td>
+                <td class="border px-4 py-2 text-center">{{ $sr->service_date->format('Y/m/d')}}</td>
+                <td class="border px-4 py-2 text-center">{{ $sr->member->name ?? $sr->member->dailyPlan->lock_number}}</td>
                 <td class="border px-4 py-2 text-center">{{ $sr->quantity}}</td>
                 <td class="border px-4 py-2 text-center">{{ $sr->total_price }} <small>Af</small></td>
             </tr>

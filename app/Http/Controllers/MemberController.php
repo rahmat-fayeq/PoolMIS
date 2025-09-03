@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\Service;
-use App\Models\SessionalVisit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class MemberController extends Controller
 {
@@ -20,14 +20,14 @@ class MemberController extends Controller
             'monthlyVisits',
             'services.service',
         ])
-        ->when($request->has('search'), function($query) use($request){
-            $query->where('name','LIKE','%'.$request->search.'%')
-                ->orWhere('phone','LIKE','%'.$request->search.'%');
-        })
-        ->where('type', 'sessional')
-        ->latest()
-        ->paginate()
-        ->withQueryString();
+            ->when($request->has('search'), function ($query) use ($request) {
+                $query->where('name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('phone', 'LIKE', '%' . $request->search . '%');
+            })
+            ->where('type', 'sessional')
+            ->latest()
+            ->paginate()
+            ->withQueryString();
 
         $services = Service::orderBy('name')->get();
 
@@ -44,9 +44,9 @@ class MemberController extends Controller
             'monthlyVisits',
             'services.service',
         ])
-            ->when($request->has('search'), function($query) use($request){
-                $query->where('name','LIKE','%'.$request->search.'%')
-                    ->orWhere('phone','LIKE','%'.$request->search.'%');
+            ->when($request->has('search'), function ($query) use ($request) {
+                $query->where('name', 'LIKE', '%' . $request->search . '%')
+                    ->orWhere('phone', 'LIKE', '%' . $request->search . '%');
             })
             ->where('type', 'monthly')
             ->latest()
@@ -68,9 +68,9 @@ class MemberController extends Controller
                 $searchTerm = $request->search;
                 $query->where(function ($query) use ($searchTerm) {
                     $query->orWhereHas('dailyPlan', function ($q) use ($searchTerm) {
-                            $q->where('date', 'LIKE', '%'.$searchTerm.'%')
-                                ->orWhere('lock_number', '=', $searchTerm);
-                        });
+                        $q->where('date', 'LIKE', '%' . $searchTerm . '%')
+                            ->orWhere('lock_number', '=', $searchTerm);
+                    });
                 });
             })
             ->where('type', 'daily')
@@ -113,7 +113,7 @@ class MemberController extends Controller
 
         $validator->validate();
 
-        $member = Member::create($request->only('name','phone', 'type'));
+        $member = Member::create($request->only('name', 'phone', 'type'));
 
         if ($request->type == 'sessional') {
             $member->sessionalPlan()->create([
@@ -147,23 +147,52 @@ class MemberController extends Controller
 
 
     // Add service to member
+    // public function addService(Request $request, Member $member)
+    // {
+    //     $request->validate([
+    //         'service_id' => 'required|exists:services,id',
+    //         'quantity' => 'required|integer|min:1',
+    //     ]);
+
+    //     $service = Service::find($request->service_id);
+    //     $member->services()->create([
+    //         'service_id' => $service->id,
+    //         'quantity' => $request->quantity,
+    //         'total_price' => $service->price * $request->quantity,
+    //         'service_date' => now()->toDateString(),
+    //     ]);
+
+    //     return redirect()->back()->with('success', 'Service added successfully!');
+    // }
     public function addService(Request $request, Member $member)
     {
         $request->validate([
-            'service_id' => 'required|exists:services,id',
-            'quantity' => 'required|integer|min:1',
+            'service_id' => 'nullable|exists:services,id|required_without:total_expense',
+            'quantity' => 'nullable|integer|min:1|required_with:service_id',
+            'total_expense' => 'nullable|numeric|min:0|required_without:service_id',
         ]);
 
-        $service = Service::find($request->service_id);
-        $member->services()->create([
-            'service_id' => $service->id,
-            'quantity' => $request->quantity,
-            'total_price' => $service->price * $request->quantity,
-            'service_date' => now()->toDateString(),
-        ]);
+        if ($request->filled('total_expense')) {
+            // Add total expense as a generic service item
+            $member->services()->create([
+                'service_id' => null,
+                'quantity' => 1,
+                'total_price' => $request->total_expense,
+                'service_date' => now()->toDateString(),
+            ]);
+        } else {
+            $service = Service::findOrFail($request->service_id);
+            $member->services()->create([
+                'service_id' => $service->id,
+                'quantity' => $request->quantity,
+                'total_price' => $service->price * $request->quantity,
+                'service_date' => now()->toDateString(),
+            ]);
+        }
 
-        return redirect()->back()->with('success', 'Service added successfully!');
+        return redirect()->back()->with('success', 'Service/Expense added successfully!');
     }
+
 
     // Edit service item form
     public function editService(Member $member, $serviceId)
@@ -212,19 +241,21 @@ class MemberController extends Controller
     // Show expenses with optional date filter
     public function expenses(Request $request, Member $member)
     {
-        $query = $member->services()->with('service');
+        $serviceDate = $request->service_date ?? now()->format('Y-m-d');
 
-        if ($request->has('service_date')) {
-            $query->where('service_date', $request->service_date);
-        }
+        $query = $member->services()->with('service')
+            ->whereDate('service_date', $serviceDate);
 
         $expenses = $query->get();
         $total = $expenses->sum('total_price');
 
         $services = Service::orderBy('name')->get();
 
-        return view('members.expenses', compact('member', 'expenses', 'total', 'services'));
+        $member->load('dailyPlan');
+
+        return view('members.expenses', compact('member', 'expenses', 'total', 'services', 'serviceDate'));
     }
+
 
 
     // Member details
