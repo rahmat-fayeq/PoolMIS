@@ -9,7 +9,7 @@ class SessionalVisit extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['member_id', 'visit_time', 'lock_number'];
+    protected $fillable = ['member_id', 'visit_time', 'lock_number','guest'];
 
     protected function casts(): array
     {

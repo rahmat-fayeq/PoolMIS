@@ -12,6 +12,7 @@ return new class extends Migration {
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->dateTime('visit_time');
             $table->string('lock_number');
+            $table->integer('guest')->default(0);
             $table->timestamps();
         });
     }

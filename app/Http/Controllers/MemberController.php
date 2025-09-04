@@ -20,10 +20,14 @@ class MemberController extends Controller
             'monthlyVisits',
             'services.service',
         ])
-            ->where('type', 'sessional')
-            ->latest()
-            ->paginate()
-            ->withQueryString();
+        ->when($request->has('search'), function($query) use($request){
+            $query->where('name','LIKE','%'.$request->search.'%')
+                ->orWhere('phone','LIKE','%'.$request->search.'%');
+        })
+        ->where('type', 'sessional')
+        ->latest()
+        ->paginate()
+        ->withQueryString();
 
         $services = Service::orderBy('name')->get();
 

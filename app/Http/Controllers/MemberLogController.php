@@ -12,7 +12,9 @@ class MemberLogController extends Controller
     // Sessional visit logging
     public function logSessionalVisit(Request $request, $memberId)
     {
-        $member = Member::with(['sessionalPlan', 'sessionalVisits'])->findOrFail($memberId);
+        $member = Member::with(['sessionalPlan', 'sessionalVisits' => function ($q) {
+            $q->orderBy('visit_time', 'desc');
+        }])->findOrFail($memberId);
 
         if (!$member->sessionalPlan) {
             return back()->with('error', 'No sessional plan assigned.');
@@ -45,6 +47,7 @@ class MemberLogController extends Controller
         $member->sessionalVisits()->create([
             'lock_number' => $request->lock_number,
             'visit_time' => $request->visit_time,
+            'guest' => $request->guest
         ]);
 
         $member->sessionalPlan->decrement('remaining_sessions', $decrement);
@@ -53,8 +56,11 @@ class MemberLogController extends Controller
     }
 
 
-    public function deleteSessionalVisit(string $id)
+    public function deleteSessionalVisit(string $id, Member $member)
     {
+        $visit = SessionalVisit::query()->findOrFail($id);
+        $increment = $visit->guest === 0 ? 1 : $visit->guest + 1;
+        $member->sessionalPlan()->increment('remaining_sessions', $increment);
         SessionalVisit::where('id', $id)->delete();
         return back()->with('success', 'Sessional visit deleted successfully.');
     }
@@ -62,8 +68,9 @@ class MemberLogController extends Controller
     // --- Monthly Visit Logging ---
     public function logMonthlyVisit(Request $request, $memberId)
     {
-        $member = Member::with(['monthlyPlan', 'monthlyVisits'])
-                ->findOrFail($memberId);
+        $member = Member::with(['monthlyPlan', 'monthlyVisits' => function ($q) {
+            $q->orderBy('visit_time', 'desc');
+        }])->findOrFail($memberId);
 
         if (!$member->monthlyPlan) {
             return back()->with('error', 'No monthly plan assigned.');

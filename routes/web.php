@@ -46,7 +46,7 @@ Route::middleware(['auth'])->group(function () {
     // Member visits
     Route::get('/members/{member}/sessional-visit', [MemberLogController::class, 'logSessionalVisit'])->name('members.sessionalVisit');
     Route::post('/members/{member}/sessional-visit', [MemberLogController::class, 'storeLogSessionalVisit'])->name('members.sessionalVisit.store');
-    Route::delete('sessional-visits/{id}', [MemberLogController::class, 'deleteSessionalVisit'])->name('members.deleteSessionalVisit');
+    Route::delete('sessional-visits/{id}/{member}', [MemberLogController::class, 'deleteSessionalVisit'])->name('members.deleteSessionalVisit');
 
     Route::get('/members/{member}/monthly-visits', [MemberLogController::class, 'logMonthlyVisit'])->name('members.monthlyVisit');
     Route::post('/members/{member}/monthly-visits', [MemberLogController::class, 'storeLogMonthlyVisit'])->name('members.monthlyVisit.store');

@@ -18,7 +18,8 @@
             </div>
             <div class="ml-2">
                 <label>Visit Date</label>
-                <x-forms.input type="datetime-local" label="" name="visit_time" required />
+                <x-forms.input type="datetime-local" value="{{ now() }}" label="" name="visit_time"
+                    required />
             </div>
 
 
@@ -27,7 +28,7 @@
         </form>
 
         {{-- Filter Form --}}
-        <form method="GET" action="" class="flex justify-between items-center">
+        <form method="GET" action="" class="flex justify-between items-center mt-6">
             <input type="date" name="visit_time" value="{{ request('visit_time') }}" required
                 class="w-full mr-1 px-4 py-1.5 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
             <x-button type="info"><i class="fa fa-filter" aria-hidden="true"></i> Filter</x-button>
@@ -48,6 +49,7 @@
                     <th scope="col" class="px-6 py-3">Lock Number</th>
                     <th scope="col" class="px-6 py-3">Visit Date</th>
                     <th scope="col" class="px-6 py-3">Visit Time</th>
+                    <th scope="col" class="px-6 py-3">Guest</th>
                     <th scope="col" class="px-6 py-3">Delete</th>
                 </tr>
             </thead>
@@ -56,11 +58,12 @@
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200">
                         <th class="px-6 py-4">{{ $index + 1 }}</th>
                         <td class="px-6 py-4">{{ $m->lock_number }}</td>
-                        <td class="px-6 py-4">{{ $m->visit_time->format('Y/m/d') }}</td>
+                        <td class="px-6 py-4">{{ $m->visit_time->format('Y-m-d') }}</td>
                         <td class="px-6 py-4">{{ \Carbon\Carbon::parse($m->visit_time)->format('h:i:s A') }}</td>
+                        <td class="px-6 py-4">{{ $m->guest }}</td>
                         <td class="px-6 py-4">
                             <x-delete-item id="{{ $m->id }}"
-                                url="{{ route('members.deleteSessionalVisit', $m->id) }}" />
+                                url="{{ route('members.deleteSessionalVisit', [$m->id, $member->id]) }}" />
                         </td>
                     </tr>
                 @endforeach
