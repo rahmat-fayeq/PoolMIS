@@ -80,7 +80,9 @@
         @endif
         @if (!empty($planInfo))
             <p style="margin-top: -10px;">{{ $planInfo }}</p>
+            <p style="margin-top: -10px;">Customer Name: {{ ucfirst($member->name) }}</p>
         @endif
+        <p style="margin-top: -10px;">Cashier Name: {{ ucfirst($cashierName) }}</p>
 
         <!-- Items Table -->
         <table>
@@ -93,20 +95,32 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($expenses as $index => $expense)
-                    <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
-                        </td>
-                        <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
-                        <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
-                    </tr>
-                @endforeach
+            @if($member->type == 'daily')
+            <tr>
+                <td></td>
+                <td>Pool</td>
+                <td class="text-right"></td>
+                <td class="text-right">{{ number_format($dailyPrice, 2) }}</td>
+            </tr>               
+            @endif
+            @foreach ($expenses as $index => $expense)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
+                </td>
+                <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
+                <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
+            </tr>
+            @endforeach
             </tbody>
         </table>
 
         <!-- Total -->
-        <p class="total text-right">Total: {{ number_format($totalAmount, 2) }}</p>
+        @if($totalAmountWithPrice>0)
+            <p class="total text-right">Total: {{ number_format($totalAmountWithPrice, 2) }}</p>
+        @else
+            <p class="total text-right">Total: {{ number_format($totalAmount, 2) }}</p>
+        @endif
 
         <!-- Company Address -->
         <div class="company-address">

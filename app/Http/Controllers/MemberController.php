@@ -292,36 +292,43 @@ class MemberController extends Controller
 
         // Determine plan info
         $lockNumber = 'N/A';
+        $dailyPrice = 0;
         $planInfo = '';
         switch ($member->type) {
             case 'daily':
                 if ($member->dailyPlan) {
                     $lockNumber = $member->dailyPlan->lock_number ?? 'N/A';
+                    $dailyPrice = $member->dailyPlan->price ?? 0;
                 }
                 break;
 
             case 'monthly':
                 if ($member->monthlyPlan) {
                     $lockNumber = $member->monthlyPlan->lock_number ?? 'N/A';
-                    $planInfo = 'Start: ' . $member->monthlyPlan->start_date . ' | End: ' . $member->monthlyPlan->end_date;
+                    $planInfo = 'Start: ' . $member->monthlyPlan->start_date->format('Y-m-d') . '|End: ' . $member->monthlyPlan->end_date->format('Y-m-d');
                 }
                 break;
 
             case 'sessional':
                 if ($member->sessionalPlan) {
                     $lockNumber = $member->sessionalPlan->lock_number ?? 'N/A';
-                    $planInfo = 'Total: ' . $member->sessionalPlan->total_sessions . ' | Remaining: ' . $member->sessionalPlan->remaining_sessions;
+                    $planInfo = 'Total Session: ' . $member->sessionalPlan->total_sessions . ' | Remaining: ' . $member->sessionalPlan->remaining_sessions;
                 }
                 break;
         }
 
+        $totalAmountWithPrice = 0;
+        // total amount for daily 
+        if($member->type == 'daily'){
+            $totalAmountWithPrice = $dailyPrice + $totalAmount;
+        }
+        
         // Get **max receipt number across all receipts today** instead of per member
         $dailyNumber = DB::table('receipts')
             ->whereDate('service_date', $serviceDate)
             ->max('daily_number');
 
         $dailyNumber = $dailyNumber ? $dailyNumber + 1 : 1;
-
         // Save receipt to DB
         $receiptId = DB::table('receipts')->insertGetId([
             'member_id' => $member->id,
@@ -334,6 +341,8 @@ class MemberController extends Controller
 
         $currentDateTime = now();
 
+        $cashierName = Auth::user()->name;
+
         return view('members.receipt', compact(
             'member',
             'expenses',
@@ -342,7 +351,10 @@ class MemberController extends Controller
             'planInfo',
             'dailyNumber',
             'currentDateTime',
-            'serviceDate'
+            'serviceDate',
+            'dailyPrice',
+            'totalAmountWithPrice',
+            'cashierName',
         ));
     }
 }
