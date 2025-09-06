@@ -2,116 +2,126 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>Receipt</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            font-size: 12px;
+            font-family: monospace;
+            margin: 0;
+            padding: 0;
         }
 
-        h1,
-        h2 {
-            text-align: center;
-            margin: 0;
+        .receipt {
+            width: 80mm;
+            padding: 5px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        table,
-        th,
-        td {
-            border: 1px dashed black;
         }
 
         th,
         td {
-            padding: 8px;
-            text-align: center;
+            text-align: left;
+            padding: 2px 0;
+            border-bottom: 1px dashed #000;
+        }
+
+        .text-right {
+            text-align: right;
         }
 
         .total {
-            text-align: right;
             font-weight: bold;
         }
 
-        .footer {
-            margin-top: 20px;
+        .company-name {
             text-align: center;
-            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .company-address {
+            text-align: start;
+            margin-top: 5px;
+            font-size: 12px;
         }
 
         @media print {
-            body {
-                margin: 0;
+            body * {
+                visibility: hidden;
+            }
+
+            #printable-area,
+            #printable-area * {
+                visibility: visible;
+            }
+
+            #printable-area {
+                position: absolute;
+                left: 0;
+                top: 0;
             }
         }
     </style>
 </head>
 
-<body onload="window.print()">
+<body>
+    <div id="printable-area" class="receipt">
+        <!-- Company Name -->
+        <div class="company-name">VIP Cash Receipt</div>
 
-    <center>
-        <h3>Cash Receipt</h3>
-        <h5 style="margin-top: -10px">{{ config('app.name') }}</h5>
-    </center>
+        <!-- Current Date/Time and Receipt Info -->
+        <p>Date: {{ $currentDateTime->format('Y-m-d') }} Time: {{ $currentDateTime->format('h:i:s A') }}</p>
+        <p style="margin-top: -10px;">Receipt #: {{ $dailyNumber }} <small>({{ ucfirst($member->type) }})</small></p>
 
-    {{-- <p>Date:
-        @if ($expenses->isNotEmpty())
-            {{ \Carbon\Carbon::parse($expenses->first()->service_date)->format('Y/m/d') }}
-        @else
-            {{ now()->format('Y/m/d') }}
+        <!-- Member Info -->
+        @if ($lockNumber && $lockNumber !== 'N/A')
+            <p style="margin-top: -10px;">Lock #: {{ $lockNumber }}</p>
         @endif
-    </p> --}}
+        @if (!empty($planInfo))
+            <p style="margin-top: -10px;">{{ $planInfo }}</p>
+        @endif
 
-    <p>Date: {{ \Carbon\Carbon::parse($date)->format('Y/m/d') }}</p>
-    <p>Time: {{ \Carbon\Carbon::parse($time)->format('h:i:s A') }}</p>
-
-    <p style="margin-top: -5px;">Receipt #: {{ $receiptNumber }}</p>
-    <p style="margin-top: -5px;">Member: {{ $member->name }}</p>
-    <p style="margin-top: -5px;">Lock Number: {{ $lockNumber ?? 'N/A' }}</p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Item</th>
-                <th>Qty</th>
-                <th>Rate</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $grandTotal = 0; @endphp
-            @foreach ($expenses as $index => $e)
-                @php
-                    $total = $e->quantity * $e->service->price;
-                    $grandTotal += $total;
-                @endphp
+        <!-- Items Table -->
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $e->service->name }}</td>
-                    <td>{{ $e->quantity }}</td>
-                    <td>{{ number_format($e->service->price, 2) }}</td>
-                    <td>{{ number_format($total, 2) }}</td>
+                    <th>#</th>
+                    <th>Item</th>
+                    <th class="text-right">Qty</th>
+                    <th class="text-right">Price</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach ($expenses as $index => $expense)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
+                        </td>
+                        <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
+                        <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
 
-    <p class="total">Total: AFN {{ number_format($grandTotal, 2) }}</p>
+        <!-- Total -->
+        <p class="total text-right">Total: {{ number_format($totalAmount, 2) }}</p>
 
-    <div class="footer">
-        <p>🏠 Kabul, Karte-4, Between 3th police Station & Pule Surkh Square</p>
-        <p>📞 +93 700 123 456</p>
-        <p>Thank you for your visit!</p>
+        <!-- Company Address -->
+        <div class="company-address">
+            Address: Kabul, Karte 4, Between 3th Police Station & Pole Surkh Square <br>
+            Email: viplounge.kbl@gmail.com <br />
+            Phone: +93(0) 728 779 779
+        </div>
     </div>
 
+    <script>
+        // Automatically trigger print
+        window.addEventListener('DOMContentLoaded', function() {
+            window.print();
+        });
+    </script>
 </body>
 
 </html>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\Service;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -274,112 +276,73 @@ class MemberController extends Controller
         return view('members.details', compact('member'));
     }
 
+
+    // Print receipt
     public function printReceipt(Member $member, Request $request)
     {
-        // Filter expenses by service_date if provided
-        $query = $member->expenses()->with('service');
+        $serviceDate = $request->service_date ?? now()->toDateString();
 
-        if ($request->filled('service_date')) {
-            $query->whereDate('service_date', '=', $request->service_date);
-        }
+        // Fetch expenses for this member on the given date
+        $expenses = $member->services()
+            ->with('service')
+            ->whereDate('service_date', $serviceDate)
+            ->get();
 
-        $expenses = $query->get();
-
-        // Total amount
         $totalAmount = $expenses->sum('total_price');
 
-        // Generate a unique receipt number
-        $receiptNumber = 'RCPT-' . now()->format('YmdHis');
-
-        // Determine the correct date, time, and lock number based on member type
-        $date = now();
-        $time = now();
+        // Determine plan info
         $lockNumber = 'N/A';
+        $planInfo = '';
+        switch ($member->type) {
+            case 'daily':
+                if ($member->dailyPlan) {
+                    $lockNumber = $member->dailyPlan->lock_number ?? 'N/A';
+                }
+                break;
 
-        if ($request->filled('service_date')) {
-            $serviceDate = $request->service_date;
+            case 'monthly':
+                if ($member->monthlyPlan) {
+                    $lockNumber = $member->monthlyPlan->lock_number ?? 'N/A';
+                    $planInfo = 'Start: ' . $member->monthlyPlan->start_date . ' | End: ' . $member->monthlyPlan->end_date;
+                }
+                break;
 
-            switch ($member->type) {
-                case 'daily':
-                    if ($member->dailyPlan) {
-                        $date = $member->dailyPlan->date;
-                        $time = $member->dailyPlan->date; // if you have time stored separately, adjust
-                        $lockNumber = $member->dailyPlan->lock_number ?? 'N/A';
-                    }
-                    break;
-
-                case 'monthly':
-                    $monthlyVisit = $member->monthlyVisits()
-                        ->whereDate('visit_time', $serviceDate)
-                        ->first();
-                    if ($monthlyVisit) {
-                        $date = $monthlyVisit->visit_time;
-                        $time = $monthlyVisit->visit_time;
-                        $lockNumber = $monthlyVisit->lock_number ?? 'N/A';
-                    }
-                    break;
-
-                case 'sessional':
-                    $sessionalVisit = $member->sessionalVisits()
-                        ->whereDate('visit_time', $serviceDate)
-                        ->first();
-                    if ($sessionalVisit) {
-                        $date = $sessionalVisit->visit_time;
-                        $time = $sessionalVisit->visit_time;
-                        $lockNumber = $sessionalVisit->lock_number ?? 'N/A';
-                    }
-                    break;
-            }
+            case 'sessional':
+                if ($member->sessionalPlan) {
+                    $lockNumber = $member->sessionalPlan->lock_number ?? 'N/A';
+                    $planInfo = 'Total: ' . $member->sessionalPlan->total_sessions . ' | Remaining: ' . $member->sessionalPlan->remaining_sessions;
+                }
+                break;
         }
 
-        return view('members.receipt', compact('member', 'expenses', 'totalAmount', 'receiptNumber', 'date', 'time', 'lockNumber'));
+        // Get **max receipt number across all receipts today** instead of per member
+        $dailyNumber = DB::table('receipts')
+            ->whereDate('service_date', $serviceDate)
+            ->max('daily_number');
+
+        $dailyNumber = $dailyNumber ? $dailyNumber + 1 : 1;
+
+        // Save receipt to DB
+        $receiptId = DB::table('receipts')->insertGetId([
+            'member_id' => $member->id,
+            'service_date' => $serviceDate,
+            'daily_number' => $dailyNumber,
+            'total_amount' => $totalAmount,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $currentDateTime = now();
+
+        return view('members.receipt', compact(
+            'member',
+            'expenses',
+            'totalAmount',
+            'lockNumber',
+            'planInfo',
+            'dailyNumber',
+            'currentDateTime',
+            'serviceDate'
+        ));
     }
-
-    // public function printReceipt(Member $member, Request $request)
-    // {
-    //     // Filter expenses by date only
-    //     $query = $member->expenses()->with('service');
-
-    //     if ($request->filled('service_date')) {
-    //         $query->whereDate('service_date', '=', $request->service_date);
-    //     }
-
-
-    //     $expenses = $query->get();
-
-    //     // Total amount
-    //     $totalAmount = $expenses->sum('total_price');
-
-    //     // Generate a unique receipt number
-    //     $receiptNumber = 'RCPT-' . now()->format('YmdHis');
-
-    //     // Default lock number
-    //     $lockNumber = 'N/A';
-    //     // Only resolve lock number if service_date filter is applied
-    //     if ($request->filled('service_date') && $expenses->isNotEmpty()) {
-    //         $serviceDate = $request->service_date;
-
-    //         switch ($member->type) {
-    //             case 'daily':
-    //                 $lockNumber = $member->dailyPlan?->lock_number ?? 'N/A';
-    //                 break;
-
-    //             case 'monthly':
-    //                 $monthlyVisit = $member->monthlyVisits()
-    //                     ->whereDate('visit_time', $serviceDate)
-    //                     ->first();
-    //                 $lockNumber = $monthlyVisit?->lock_number ?? 'N/A';
-    //                 break;
-
-    //             case 'sessional':
-    //                 $sessionalVisit = $member->sessionalVisits()
-    //                     ->whereDate('visit_time', $serviceDate)
-    //                     ->first();
-    //                 $lockNumber = $sessionalVisit?->lock_number ?? 'N/A';
-    //                 break;
-    //         }
-    //     }
-
-    //     return view('members.receipt', compact('member', 'expenses', 'totalAmount', 'receiptNumber', 'lockNumber'));
-    // }
 }
