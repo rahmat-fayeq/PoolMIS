@@ -17,8 +17,9 @@
         <!-- Sessional Fields -->
         <div id="sessional-fields" style="display:none;">
             <div class="mb-5">
-                <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled/>
-                <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}" disabled/>
+                <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled />
+                <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}"
+                    disabled />
                 <x-forms.input type="number" label="Total Sessions" name="total_sessions"
                     value="{{ old('total_sessions') }}" disabled />
                 <x-forms.input type="number" step="0.01" label="Price" name="price" value="{{ old('price') }}"
@@ -29,8 +30,9 @@
         <!-- Monthly Fields -->
         <div id="monthly-fields" style="display:none;">
             <div class="mb-5">
-                <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled/>
-                <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}" disabled/>
+                <x-forms.input type="text" label="Full Name" name="name" value="{{ old('name') }}" disabled />
+                <x-forms.input type="text" label="Phone Number" name="phone" value="{{ old('phone') }}"
+                    disabled />
                 <x-forms.input type="date" label="Start Date" name="start_date" value="{{ old('start_date') }}"
                     disabled />
                 <x-forms.input type="date" label="End Date" name="end_date" value="{{ old('end_date') }}" disabled />
@@ -42,9 +44,11 @@
         <!-- Daily Fields -->
         <div id="daily-fields" style="display:none;">
             <div class="mb-5">
-                <x-forms.input type="number" step="0.01" label="Price" name="price" value="{{ old('price') }}"
-                    disabled />
                 <x-forms.input type="number" label="Lock Number" name="lock_number" value="{{ old('lock_number') }}"
+                    disabled />
+                <x-forms.input type="number" min="0" label="Quantity" name="quantity"
+                    value="{{ old('quantity') }}" disabled />
+                <x-forms.input type="number" min="0" label="Price" name="price" value="{{ old('price') }}"
                     disabled />
             </div>
         </div>

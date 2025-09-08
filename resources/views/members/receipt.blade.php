@@ -7,13 +7,12 @@
             font-family: monospace;
             margin: 0;
             padding: 0;
-            font-size: 24px;
         }
 
         .receipt {
             width: 80mm;
             padding: 5px;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         table {
@@ -24,15 +23,14 @@
 
         th,
         td {
-            text-align: left;
+            text-align: center;
             padding: 2px 0;
             border-bottom: 1px dashed #000;
             font-size: 24px;
         }
 
         .text-right {
-            text-align: right;
-            font-size: 24px;
+            text-align: center;
         }
 
         .total {
@@ -50,7 +48,7 @@
         .company-address {
             text-align: start;
             margin-top: 5px;
-            font-size: 24px;
+            font-size: 20px;
         }
 
         @media print {
@@ -95,28 +93,42 @@
         <table>
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Item</th>
-                    <th class="text-right">Qty</th>
-                    <th class="text-right">Price</th>
+                    <th>Item&nbsp;</th>
+                    <th class="text-right">Qty&nbsp;</th>
+                    <th class="text-right"> Price&nbsp;</th>
+                    {{-- @if ($member->type == 'daily') --}}
+                    <th class="text-right">Total&nbsp;</th>
+                    {{-- @endif --}}
                 </tr>
             </thead>
             <tbody>
                 @if ($member->type == 'daily')
                     <tr>
-                        <td></td>
                         <td>Pool</td>
-                        <td class="text-right"></td>
-                        <td class="text-right">{{ number_format($dailyPrice, 2) }}</td>
+                        <td class="text-right">{{ $dailyQuantity }}</td>
+                        <td class="text-right">{{ $dailyPrice }}</td>
+                        <td class="text-right">{{ $dailyQuantity * $dailyPrice }}</td>
                     </tr>
                 @endif
                 @foreach ($expenses as $index => $expense)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
                         <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
                         </td>
                         <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
-                        <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
+                        <td class="text-right">
+                            {{ $expense->price }}
+                        </td>
+                        @if ($member->type == 'daily')
+                            @if ($expense->price == 0)
+                                <td class="text-right">{{ $dailyPrice }}</td>
+                            @else
+                                <td class="text-right">{{ $expense->quantity * $expense->price }}</td>
+                            @endif
+                        @else
+                            <td class="text-right">
+                                {{ $expense->price * $expense->quantity }}
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>
@@ -124,9 +136,9 @@
 
         <!-- Total -->
         @if ($totalAmountWithPrice > 0)
-            <p class="total text-right">Total: {{ number_format($totalAmountWithPrice, 2) }}</p>
+            <p class="total text-right">Total: {{ number_format($totalAmountWithPrice, 0) }}</p>
         @else
-            <p class="total text-right">Total: {{ number_format($totalAmount, 2) }}</p>
+            <p class="total text-right">Total: {{ number_format($totalAmount, 0) }}</p>
         @endif
 
         <!-- Company Address -->

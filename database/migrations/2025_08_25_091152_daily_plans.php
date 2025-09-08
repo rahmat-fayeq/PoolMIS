@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->dateTime('date');
-            $table->decimal('price', 8, 2);
+            $table->integer('price');
             $table->string('lock_number');
+            $table->integer('quantity')->default(1);
             $table->timestamps();
         });
     }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberService extends Model
 {
-    protected $fillable = ['member_id', 'service_id', 'quantity', 'total_price', 'service_date'];
+    protected $fillable = ['member_id', 'service_id', 'quantity', 'price', 'total_price', 'service_date'];
 
     protected function casts(): array
     {

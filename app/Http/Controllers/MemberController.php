@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\Service;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -100,6 +99,7 @@ class MemberController extends Controller
             'total_sessions' => 'required_if:type,sessional|integer|min:1',
             'price' => 'required_if:type,sessional,monthly,daily|numeric|min:0',
             'lock_number' => 'required_if:type,daily|string',
+            'quantity' => 'required_if:type,daily|numeric|min:1',
         ]);
 
         $validator->sometimes('name', 'required|string|min:3|max:255', function ($input) {
@@ -134,6 +134,7 @@ class MemberController extends Controller
                 'date' => now(),
                 'price' => $request->price,
                 'lock_number' => $request->lock_number,
+                'quantity' => $request->quantity,
             ]);
         }
 
@@ -179,6 +180,7 @@ class MemberController extends Controller
             $member->services()->create([
                 'service_id' => null,
                 'quantity' => 1,
+                'price' => $request->total_expense,
                 'total_price' => $request->total_expense,
                 'service_date' => now()->toDateString(),
             ]);
@@ -187,6 +189,7 @@ class MemberController extends Controller
             $member->services()->create([
                 'service_id' => $service->id,
                 'quantity' => $request->quantity,
+                'price' => $service->price,
                 'total_price' => $service->price * $request->quantity,
                 'service_date' => now()->toDateString(),
             ]);
@@ -293,12 +296,14 @@ class MemberController extends Controller
         // Determine plan info
         $lockNumber = 'N/A';
         $dailyPrice = 0;
+        $dailyQuantity = 0;
         $planInfo = '';
         switch ($member->type) {
             case 'daily':
                 if ($member->dailyPlan) {
                     $lockNumber = $member->dailyPlan->lock_number ?? 'N/A';
                     $dailyPrice = $member->dailyPlan->price ?? 0;
+                    $dailyQuantity = $member->dailyPlan->quantity ?? 1;
                 }
                 break;
 
@@ -319,10 +324,10 @@ class MemberController extends Controller
 
         $totalAmountWithPrice = 0;
         // total amount for daily 
-        if($member->type == 'daily'){
-            $totalAmountWithPrice = $dailyPrice + $totalAmount;
+        if ($member->type == 'daily') {
+            $totalAmountWithPrice = ($dailyQuantity * $dailyPrice) + $totalAmount;
         }
-        
+
         // Get **max receipt number across all receipts today** instead of per member
         $dailyNumber = DB::table('receipts')
             ->whereDate('service_date', $serviceDate)
@@ -355,6 +360,7 @@ class MemberController extends Controller
             'dailyPrice',
             'totalAmountWithPrice',
             'cashierName',
+            'dailyQuantity',
         ));
     }
 }

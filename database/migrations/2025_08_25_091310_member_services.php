@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
             $table->foreignId('service_id')->nullable()->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
-            $table->decimal('total_price', 8, 2);
+            $table->integer('price')->default(0);
+            $table->integer('total_price');
             $table->dateTime('service_date');
             $table->timestamps();
         });
