@@ -7,16 +7,19 @@
             font-family: monospace;
             margin: 0;
             padding: 0;
+            font-size: 24px;
         }
 
         .receipt {
             width: 80mm;
             padding: 5px;
+            font-size: 24px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 24px;
         }
 
         th,
@@ -24,26 +27,30 @@
             text-align: left;
             padding: 2px 0;
             border-bottom: 1px dashed #000;
+            font-size: 24px;
         }
 
         .text-right {
             text-align: right;
+            font-size: 24px;
         }
 
         .total {
             font-weight: bold;
+            font-size: 24px;
         }
 
         .company-name {
             text-align: center;
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 24px;
         }
 
         .company-address {
             text-align: start;
             margin-top: 5px;
-            font-size: 12px;
+            font-size: 24px;
         }
 
         @media print {
@@ -95,28 +102,28 @@
                 </tr>
             </thead>
             <tbody>
-            @if($member->type == 'daily')
-            <tr>
-                <td></td>
-                <td>Pool</td>
-                <td class="text-right"></td>
-                <td class="text-right">{{ number_format($dailyPrice, 2) }}</td>
-            </tr>               
-            @endif
-            @foreach ($expenses as $index => $expense)
-            <tr>
-                <td>{{ $index + 1 }}</td>
-                <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
-                </td>
-                <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
-                <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
-            </tr>
-            @endforeach
+                @if ($member->type == 'daily')
+                    <tr>
+                        <td></td>
+                        <td>Pool</td>
+                        <td class="text-right"></td>
+                        <td class="text-right">{{ number_format($dailyPrice, 2) }}</td>
+                    </tr>
+                @endif
+                @foreach ($expenses as $index => $expense)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $expense->service_name ?? ($expense->service->name ?? ($expense->custom_name ?? 'Total Food')) }}
+                        </td>
+                        <td class="text-right">{{ $expense->quantity ?? 1 }}</td>
+                        <td class="text-right">{{ number_format($expense->total_price, 2) }}</td>
+                    </tr>
+                @endforeach
             </tbody>
         </table>
 
         <!-- Total -->
-        @if($totalAmountWithPrice>0)
+        @if ($totalAmountWithPrice > 0)
             <p class="total text-right">Total: {{ number_format($totalAmountWithPrice, 2) }}</p>
         @else
             <p class="total text-right">Total: {{ number_format($totalAmount, 2) }}</p>
