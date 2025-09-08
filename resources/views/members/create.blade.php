@@ -36,7 +36,7 @@
                 <x-forms.input type="date" label="Start Date" name="start_date" value="{{ old('start_date') }}"
                     disabled />
                 <x-forms.input type="date" label="End Date" name="end_date" value="{{ old('end_date') }}" disabled />
-                <x-forms.input type="number" step="0.01" label="Price" name="price" value="{{ old('price') }}"
+                <x-forms.input type="number" min="0" label="Price" name="price" value="{{ old('price') }}"
                     disabled />
             </div>
         </div>

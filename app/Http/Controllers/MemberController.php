@@ -141,6 +141,41 @@ class MemberController extends Controller
         return redirect()->route('members.create')->with('success', 'Member created successfully!');
     }
 
+    public function edit(Member $member)
+    {
+        return view('members.edit', [
+            'member' => $member->load('monthlyPlan'),
+        ]);
+    }
+
+    public function update(Request $request, Member $member)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'price' => 'required|numeric|min:0',
+            'start_date' => 'required|date|date_format:Y-m-d',
+            'end_date' => 'required|date|date_format:Y-m-d',
+        ]);
+
+
+        $validator->validate();
+
+        $member->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'type' => 'monthly',
+        ]);
+
+        $member->monthlyPlan()->update([
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'price' => $request->price,
+        ]);
+
+        return redirect()->route('members.monthly')->with('success', 'Member updated successfully!');
+    }
+
     public function destroy(Member $member)
     {
         $member->delete();
