@@ -42,38 +42,38 @@ class DashboardController extends Controller
 
         // ---- Revenue ----
         $sessionalItemRevenue = MemberService::with('member')
-            ->whereHas('member', function($query){
-                $query->where('type','sessional');
+            ->whereHas('member', function ($query) {
+                $query->where('type', 'sessional');
             })
-            ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
-                $query->whereBetween('service_date',[$from,$to]);
+            ->when($request->has('from') && $request->has('to'), function ($query) use ($from, $to) {
+                $query->whereBetween('service_date', [$from, $to]);
             })
             ->sum(
-              'total_price'
+                'total_price'
             );
 
         $monthlyItemRevenue = MemberService::with('member')
-        ->whereHas('member', function($query){
-            $query->where('type','monthly');
-        })
-        ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
-            $query->whereBetween('service_date',[$from,$to]);
-        })
-        ->sum(
-            'total_price'
-        );
-        
+            ->whereHas('member', function ($query) {
+                $query->where('type', 'monthly');
+            })
+            ->when($request->has('from') && $request->has('to'), function ($query) use ($from, $to) {
+                $query->whereBetween('service_date', [$from, $to]);
+            })
+            ->sum(
+                'total_price'
+            );
+
         $dailyItemRevenue = MemberService::with('member')
-        ->whereHas('member', function($query){
-            $query->where('type','daily');
-        })
-        ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
-            $query->whereBetween('service_date',[$from,$to]);
-        })
-        ->sum(
-            'total_price'
-        );    
-            
+            ->whereHas('member', function ($query) {
+                $query->where('type', 'daily');
+            })
+            ->when($request->has('from') && $request->has('to'), function ($query) use ($from, $to) {
+                $query->whereBetween('service_date', [$from, $to]);
+            })
+            ->sum(
+                'total_price'
+            );
+
 
         $sessionalMembersRevenue = $sessionalMembers->sum(
             fn($m) => ($m->sessionalPlan &&
@@ -90,7 +90,7 @@ class DashboardController extends Controller
         $dailyMembersRevenue = $dailyMembers->sum(
             fn($m) => ($m->dailyPlan &&
                 (!$from || !$to || \Carbon\Carbon::parse($m->dailyPlan->date ?? $m->dailyPlan->created_at)->between($from, $to)))
-                ? $m->dailyPlan->price : 0
+                ? $m->dailyPlan->price * $m->dailyPlan->quantity : 0
         );
 
         // ---- Services ----
@@ -114,14 +114,14 @@ class DashboardController extends Controller
             'monthlyMembersCount'     => $monthlyMembersCount,
             'dailyMembersCount'       => $dailyMembersCount,
             'totalMembers'            => $sessionalMembersCount + $monthlyMembersCount + $dailyMembersCount,
-            'sessionalMembersRevenue' => $sessionalMembersRevenue+$sessionalItemRevenue,
-            'monthlyMembersRevenue'   => $monthlyMembersRevenue+$monthlyItemRevenue,
-            'dailyMembersRevenue'     => $dailyMembersRevenue+$dailyItemRevenue,
-            'totalRevenue'            => $dailyItemRevenue+$monthlyItemRevenue+$sessionalItemRevenue+$sessionalMembersRevenue + $monthlyMembersRevenue + $dailyMembersRevenue,
+            'sessionalMembersRevenue' => $sessionalMembersRevenue + $sessionalItemRevenue,
+            'monthlyMembersRevenue'   => $monthlyMembersRevenue + $monthlyItemRevenue,
+            'dailyMembersRevenue'     => $dailyMembersRevenue + $dailyItemRevenue,
+            'totalRevenue'            => $dailyItemRevenue + $monthlyItemRevenue + $sessionalItemRevenue + $sessionalMembersRevenue + $monthlyMembersRevenue + $dailyMembersRevenue,
             'items'                   => $items,
             'salary'                  => $salary,
             'expense'                 => $expense,
-            'totalExpense'            => $salary+$expense,  
+            'totalExpense'            => $salary + $expense,
             'from'                    => $from,
             'to'                      => $to,
         ]);
