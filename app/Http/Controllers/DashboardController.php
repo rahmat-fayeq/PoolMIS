@@ -41,6 +41,40 @@ class DashboardController extends Controller
         )->count();
 
         // ---- Revenue ----
+        $sessionalItemRevenue = MemberService::with('member')
+            ->whereHas('member', function($query){
+                $query->where('type','sessional');
+            })
+            ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
+                $query->whereBetween('service_date',[$from,$to]);
+            })
+            ->sum(
+              'total_price'
+            );
+
+        $monthlyItemRevenue = MemberService::with('member')
+        ->whereHas('member', function($query){
+            $query->where('type','monthly');
+        })
+        ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
+            $query->whereBetween('service_date',[$from,$to]);
+        })
+        ->sum(
+            'total_price'
+        );
+        
+        $dailyItemRevenue = MemberService::with('member')
+        ->whereHas('member', function($query){
+            $query->where('type','daily');
+        })
+        ->when($request->has('from') && $request->has('to'), function($query)use($from, $to){
+            $query->whereBetween('service_date',[$from,$to]);
+        })
+        ->sum(
+            'total_price'
+        );    
+            
+
         $sessionalMembersRevenue = $sessionalMembers->sum(
             fn($m) => ($m->sessionalPlan &&
                 (!$from || !$to || $m->sessionalPlan->created_at->between($from, $to)))
@@ -80,10 +114,10 @@ class DashboardController extends Controller
             'monthlyMembersCount'     => $monthlyMembersCount,
             'dailyMembersCount'       => $dailyMembersCount,
             'totalMembers'            => $sessionalMembersCount + $monthlyMembersCount + $dailyMembersCount,
-            'sessionalMembersRevenue' => $sessionalMembersRevenue,
-            'monthlyMembersRevenue'   => $monthlyMembersRevenue,
-            'dailyMembersRevenue'     => $dailyMembersRevenue,
-            'totalRevenue'            => $sessionalMembersRevenue + $monthlyMembersRevenue + $dailyMembersRevenue,
+            'sessionalMembersRevenue' => $sessionalMembersRevenue+$sessionalItemRevenue,
+            'monthlyMembersRevenue'   => $monthlyMembersRevenue+$monthlyItemRevenue,
+            'dailyMembersRevenue'     => $dailyMembersRevenue+$dailyItemRevenue,
+            'totalRevenue'            => $dailyItemRevenue+$monthlyItemRevenue+$sessionalItemRevenue+$sessionalMembersRevenue + $monthlyMembersRevenue + $dailyMembersRevenue,
             'items'                   => $items,
             'salary'                  => $salary,
             'expense'                 => $expense,
