@@ -150,6 +150,13 @@ class MemberController extends Controller
         ]);
     }
 
+    public function editDaily(Member $member)
+    {
+        return view('members.edit-daily', [
+            'member' => $member->load('dailyPlan'),
+        ]);
+    }
+
     public function update(Request $request, Member $member)
     {
         $validator = Validator::make($request->all(), [
@@ -178,6 +185,26 @@ class MemberController extends Controller
         return redirect()->route('members.monthly')->with('success', 'Member updated successfully!');
     }
 
+    public function updateDaily(Request $request, Member $member)
+    {
+        $validator = Validator::make($request->all(), [
+            'lock_number' => 'required|string',
+            'quantity' => 'required|numeric|min:1',
+            'total_price' => 'required|numeric|min:1',
+        ]);
+
+
+        $validator->validate();
+
+        $member->dailyPlan()->update([
+            'lock_number' => $request->lock_number,
+            'quantity' => $request->quantity,
+            'total_price' => $request->total_price,
+        ]);
+
+        return redirect()->route('members.daily')->with('success', 'Member updated successfully!');
+    }
+
     public function destroy(Member $member)
     {
         $member->delete();
@@ -185,25 +212,6 @@ class MemberController extends Controller
         return redirect()->back()->with('success', 'Member deleted successfully!');
     }
 
-
-    // Add service to member
-    // public function addService(Request $request, Member $member)
-    // {
-    //     $request->validate([
-    //         'service_id' => 'required|exists:services,id',
-    //         'quantity' => 'required|integer|min:1',
-    //     ]);
-
-    //     $service = Service::find($request->service_id);
-    //     $member->services()->create([
-    //         'service_id' => $service->id,
-    //         'quantity' => $request->quantity,
-    //         'total_price' => $service->price * $request->quantity,
-    //         'service_date' => now()->toDateString(),
-    //     ]);
-
-    //     return redirect()->back()->with('success', 'Service added successfully!');
-    // }
     public function addService(Request $request, Member $member)
     {
         $request->validate([
