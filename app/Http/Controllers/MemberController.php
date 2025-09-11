@@ -342,6 +342,7 @@ class MemberController extends Controller
         $lockNumber = 'N/A';
         $dailyPrice = 0;
         $dailyQuantity = 0;
+        $dailyTotalPrice = 0;
         $planInfo = '';
         switch ($member->type) {
             case 'daily':
@@ -349,6 +350,7 @@ class MemberController extends Controller
                     $lockNumber = $member->dailyPlan->lock_number ?? 'N/A';
                     $dailyPrice = $member->dailyPlan->price ?? 0;
                     $dailyQuantity = $member->dailyPlan->quantity ?? 1;
+                    $dailyTotalPrice = $member->dailyPlan->total_price ?? 0;
                 }
                 break;
 
@@ -370,7 +372,7 @@ class MemberController extends Controller
         $totalAmountWithPrice = 0;
         // total amount for daily 
         if ($member->type == 'daily') {
-            $totalAmountWithPrice = ($dailyQuantity * $dailyPrice) + $totalAmount;
+            $totalAmountWithPrice = $dailyTotalPrice + $totalAmount;
         }
 
         // Get **max receipt number across all receipts today** instead of per member
@@ -406,6 +408,7 @@ class MemberController extends Controller
             'totalAmountWithPrice',
             'cashierName',
             'dailyQuantity',
+            'dailyTotalPrice',
         ));
     }
 }

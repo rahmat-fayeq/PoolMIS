@@ -107,7 +107,7 @@
                         <td>Pool</td>
                         <td class="text-right">{{ $dailyQuantity }}</td>
                         <td class="text-right">{{ $dailyPrice }}</td>
-                        <td class="text-right">{{ $dailyQuantity * $dailyPrice }}</td>
+                        <td class="text-right">{{ $dailyTotalPrice }}</td>
                     </tr>
                 @endif
                 @foreach ($expenses as $index => $expense)
