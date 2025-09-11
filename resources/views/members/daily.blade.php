@@ -61,7 +61,7 @@
                             {{ number_format($m->dailyPlan?->price, 0) }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ $m->dailyPlan?->quantity * $m->dailyPlan?->price }}
+                            {{ $m->dailyPlan?->total_price??0 }}
                         </td>
                         <td class="px-6 py-4">
                             <x-button tag="a" href="/members/{{ $m->id }}/expenses" type="info"

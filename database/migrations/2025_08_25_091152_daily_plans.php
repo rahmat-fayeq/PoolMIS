@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('price');
             $table->string('lock_number');
             $table->integer('quantity')->default(1);
+            $table->integer('total_price')->default(0);
             $table->timestamps();
         });
     }

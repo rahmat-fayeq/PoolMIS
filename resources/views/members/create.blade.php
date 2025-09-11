@@ -50,6 +50,8 @@
                     value="{{ old('quantity') }}" disabled />
                 <x-forms.input type="number" min="0" label="Price" name="price" value="{{ old('price') }}"
                     disabled />
+                <x-forms.input type="number" min="0" label="Total Price" name="total_price" value="{{ old('total_price') }}"
+                disabled />
             </div>
         </div>
 

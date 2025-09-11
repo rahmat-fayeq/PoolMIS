@@ -90,8 +90,13 @@
                 @foreach ($members as $m)
                     <tr class="bg-white border-b hover:bg-gray-50">
                         <td class="px-6 py-4">
+                            @if(empty($m->name))
+                            <a href="{{ route('members.details', $m->id) }}"
+                                class="text-blue-600">{{ $m->dailyPlan->lock_number }}</a>
+                            @else
                             <a href="{{ route('members.details', $m->id) }}"
                                 class="text-blue-600">{{ $m->name }}</a>
+                            @endif
                         </td>
                         <td class="px-6 py-4">{{ ucfirst($m->type) }}</td>
                         <td class="px-6 py-4">{{ number_format($m->totalRevenue, 2) }}</td>

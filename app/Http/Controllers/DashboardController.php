@@ -90,7 +90,7 @@ class DashboardController extends Controller
         $dailyMembersRevenue = $dailyMembers->sum(
             fn($m) => ($m->dailyPlan &&
                 (!$from || !$to || \Carbon\Carbon::parse($m->dailyPlan->date ?? $m->dailyPlan->created_at)->between($from, $to)))
-                ? $m->dailyPlan->price * $m->dailyPlan->quantity : 0
+                ? $m->dailyPlan->total_price : 0
         );
 
         // ---- Services ----
@@ -169,7 +169,7 @@ class DashboardController extends Controller
                         : $member->dailyPlan->created_at;
 
                     if (!$from || !$to || $planDate->between($from, $to)) {
-                        $planRevenue = $member->dailyPlan->price;
+                        $planRevenue = $member->dailyPlan->total_price;
                     }
                 }
 
@@ -245,7 +245,7 @@ class DashboardController extends Controller
                     fn($m) => ($m->dailyPlan &&
                         (!$from || !$to ||
                             (Carbon::parse($m->dailyPlan->date ?? $m->dailyPlan->created_at)->between($from, $to))))
-                        ? $m->dailyPlan->price : 0
+                        ? $m->dailyPlan->total_price : 0
                 ),
             ],
         ];

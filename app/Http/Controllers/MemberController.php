@@ -100,6 +100,7 @@ class MemberController extends Controller
             'price' => 'required_if:type,sessional,monthly,daily|numeric|min:0',
             'lock_number' => 'required_if:type,daily|string',
             'quantity' => 'required_if:type,daily|numeric|min:1',
+            'total_price' => 'required_if:type,daily|numeric|min:1',
         ]);
 
         $validator->sometimes('name', 'required|string|min:3|max:255', function ($input) {
@@ -135,6 +136,7 @@ class MemberController extends Controller
                 'price' => $request->price,
                 'lock_number' => $request->lock_number,
                 'quantity' => $request->quantity,
+                'total_price' => $request->total_price,
             ]);
         }
 
