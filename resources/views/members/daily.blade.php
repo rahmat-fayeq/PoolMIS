@@ -30,6 +30,9 @@
                         Total Price
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Printed
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Expenses
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -64,6 +67,13 @@
                         </td>
                         <td class="px-6 py-4">
                             {{ $m->dailyPlan?->total_price??0 }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if((bool)$m->printed)
+                                <p class="text-green-600">Yes</p>
+                            @else
+                                <p class="text-rose-700">No</p>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             <x-button tag="a" href="/members/{{ $m->id }}/expenses" type="info"

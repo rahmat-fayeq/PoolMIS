@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
-    protected $fillable = ['name', 'email', 'phone', 'type'];
+    protected $fillable = ['name', 'email', 'phone', 'type', 'printed'];
 
     public function sessionalPlan()
     {

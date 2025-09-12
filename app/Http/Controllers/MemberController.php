@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\MemberService;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -296,7 +297,7 @@ class MemberController extends Controller
         $query = $member->services()->with('service')
             ->whereDate('service_date', $serviceDate);
 
-        $expenses = $query->get();
+        $expenses = $query->latest()->get();
         $total = $expenses->sum('total_price');
 
         $services = Service::orderBy('name')->get();
@@ -389,6 +390,14 @@ class MemberController extends Controller
             'total_amount' => $totalAmount,
             'created_at' => now(),
             'updated_at' => now(),
+        ]);
+
+        $member->update([
+            'printed' => true
+        ]);
+
+        $member->services()->update([
+            'printed' => true
         ]);
 
         $currentDateTime = now();

@@ -78,6 +78,7 @@
                     <th scope="col" class="px-6 py-3">Service</th>
                     <th scope="col" class="px-6 py-3">Quantity</th>
                     <th scope="col" class="px-6 py-3">Total</th>
+                    <th scope="col" class="px-6 py-3">Printed</th>
                     <th scope="col" class="px-6 py-3">Delete</th>
                 </tr>
             </thead>
@@ -95,6 +96,13 @@
                         </td>
                         <td class="px-6 py-4">{{ $e->quantity ?? '-' }}</td>
                         <td class="px-6 py-4">{{ $e->total_price }}</td>
+                        <td class="px-6 py-4">
+                        @if((bool)$e->printed)
+                            <p class="text-green-600">Yes</p>
+                        @else
+                            <p class="text-rose-700">No</p>
+                        @endif
+                        </td>
                         <td class="px-6 py-4">
                             <x-delete-item id="{{ $e->id }}"
                                 url="{{ route('members.deleteService', [$member->id, $e->id]) }}" />

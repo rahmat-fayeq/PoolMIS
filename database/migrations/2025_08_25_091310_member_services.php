@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('price')->default(0);
             $table->integer('total_price');
             $table->dateTime('service_date');
+            $table->boolean('printed')->default(false);
             $table->timestamps();
         });
     }

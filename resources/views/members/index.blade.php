@@ -21,6 +21,9 @@
                         Plan Info
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Printed
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Event Logs
                     </th>
                     <th scope="col" class="px-6 py-3">
@@ -48,6 +51,13 @@
                         <td class="px-6 py-4">
                             Total Sessions: {{ $m->sessionalPlan->total_sessions }}<br>
                             Remaining: {{ $m->sessionalPlan->remaining_sessions }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @if((bool)$m->printed)
+                                <p class="text-green-600">Yes</p>
+                            @else
+                                <p class="text-rose-700">No</p>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
                             <x-button tag="a" href="{{ route('members.sessionalVisit', $m->id) }}"

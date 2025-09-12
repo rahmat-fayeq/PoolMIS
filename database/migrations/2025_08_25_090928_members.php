@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->enum('type', ['sessional', 'monthly', 'daily']);
+            $table->boolean('printed')->default(false);
             $table->timestamps();
         });
     }
