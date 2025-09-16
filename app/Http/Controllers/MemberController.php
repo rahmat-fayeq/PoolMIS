@@ -158,6 +158,13 @@ class MemberController extends Controller
         ]);
     }
 
+    public function editSessional(Member $member)
+    {
+        return view('members.edit-sessional', [
+            'member' => $member->load('sessionalPlan'),
+        ]);
+    }
+
     public function update(Request $request, Member $member)
     {
         $validator = Validator::make($request->all(), [
@@ -184,6 +191,33 @@ class MemberController extends Controller
         ]);
 
         return redirect()->route('members.monthly')->with('success', 'Member updated successfully!');
+    }
+
+    public function updateSessional(Request $request, Member $member)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'total_sessions' => 'required|integer|min:1',
+            'price' => 'required|numeric|min:0',
+        ]);
+
+
+        $validator->validate();
+
+        $member->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'type' => 'sessional',
+        ]);
+
+        $member->sessionalPlan->update([
+            'total_sessions' => $request->total_sessions,
+            'remaining_sessions' => $request->total_sessions-($member->sessionalPlan->total_sessions-$member->sessionalPlan->remaining_sessions),
+            'price' => $request->price,
+        ]);
+
+        return redirect()->route('members.index')->with('success', 'Member updated successfully!');
     }
 
     public function updateDaily(Request $request, Member $member)

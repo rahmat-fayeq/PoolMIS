@@ -44,14 +44,14 @@
         <!-- Daily Fields -->
         <div id="daily-fields" style="display:none;">
             <div class="mb-5">
-                <x-forms.input type="number" label="Lock Number" name="lock_number" value="{{ old('lock_number') }}"
+                <x-forms.input type="text" label="Lock Number" name="lock_number" value="{{ old('lock_number') }}"
                     disabled />
                 <x-forms.input type="number" min="0" label="Quantity" name="quantity"
                     value="{{ old('quantity') }}" disabled />
                 <x-forms.input type="number" min="0" label="Price" name="price" value="{{ old('price') }}"
                     disabled />
-                <x-forms.input type="number" min="0" label="Total Price" name="total_price" value="{{ old('total_price') }}"
-                disabled />
+                <x-forms.input type="number" min="0" label="Total Price" name="total_price"
+                    value="{{ old('total_price') }}" disabled />
             </div>
         </div>
 

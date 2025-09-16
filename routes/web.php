@@ -35,6 +35,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('members-monthly', [MemberController::class, 'memberMonthly'])->name('members.monthly');
     Route::get('members-daily-edit/{member}', [MemberController::class, 'editDaily'])->name('members.daily.edit');
     Route::put('members-daily-edit/{member}', [MemberController::class, 'updateDaily'])->name('members.daily.update');
+    Route::get('members-sessional/edit/{member}', [MemberController::class, 'editSessional'])->name('members.sessional.edit');
+    Route::put('members-sessional/edit/{member}', [MemberController::class, 'updateSessional'])->name('members.sessional.update');
     // Member Services CRUD
     Route::post('members/{member}/services', [MemberController::class, 'addService'])->name('members.addService');
     Route::get('members/{member}/services/{service}/edit', [MemberController::class, 'editService'])->name('members.editService');
