@@ -72,6 +72,7 @@
 
 <body>
     <div id="printable-area" class="receipt">
+		<img src="{{ asset('logo.jpeg') }}" width="300" height="100" />
         <!-- Company Name -->
         <div class="company-name">VIP Cash Receipt</div>
 
@@ -143,9 +144,10 @@
 
         <!-- Company Address -->
         <div class="company-address">
-            Address: Kabul, Karte 4, Between 3th Police Station & Pole Surkh Square <br>
-            Email: viplounge.kbl@gmail.com <br />
+            Address: Kabul, Karte 4, Between 3th Police Station & Pole Surkh Square <br/>
             Phone: +93(0) 728 779 779
+			<br/>
+			<p style="text-align:center;font-size:24px;font-weight:bold">تشکر از انتخاب شما</p>
         </div>
     </div>
 

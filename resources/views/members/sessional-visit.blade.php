@@ -14,7 +14,7 @@
             </div>
             <div class="ml-2">
                 <label>Lock Number</label>
-                <x-forms.input type="number" label="" min="0" name="lock_number" required />
+                <x-forms.input type="text" label="" min="0" name="lock_number" required />
             </div>
             <div class="ml-2">
                 <label>Visit Date</label>
