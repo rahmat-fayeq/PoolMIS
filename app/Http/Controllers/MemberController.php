@@ -71,7 +71,7 @@ class MemberController extends Controller
                 $query->where(function ($query) use ($searchTerm) {
                     $query->orWhereHas('dailyPlan', function ($q) use ($searchTerm) {
                         $q->where('date', 'LIKE', '%' . $searchTerm . '%')
-                            ->orWhere('lock_number', '=', $searchTerm);
+                            ->orWhere('lock_number', 'LIKE', '%'.$searchTerm.'%');
                     });
                 });
             })

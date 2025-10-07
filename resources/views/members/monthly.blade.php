@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Members')">
 
     <div class="mb-6 flex justify-end items-center">
-        <x-search url="{{ route('members.monthly') }}" placeholder="Search ..." />
+        <x-search url="{{ route('members.monthly') }}" placeholder="Search name, phone..." />
     </div>
 
     <div class="relative overflow-x-auto">
@@ -53,10 +53,10 @@
                             To: {{ $m->monthlyPlan->end_date->format('Y-m-d') }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ number_format($m->monthlyPlan->price, 0) }}
+                            {{ number_format($m->monthlyPlan->price ?? 0, 0) }}
                         </td>
                         <td class="px-6 py-4">
-                            @if((bool)$m->printed)
+                            @if ((bool) $m->printed)
                                 <p class="text-green-600">Yes</p>
                             @else
                                 <p class="text-rose-700">No</p>

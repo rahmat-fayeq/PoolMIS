@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Members')">
 
     <div class="mb-6 flex justify-end items-center">
-        <x-search url="{{ route('members.daily') }}" placeholder="Search ..." />
+        <x-search url="{{ route('members.daily') }}" placeholder="Search Lock no, date ..." />
     </div>
 
     <div class="relative overflow-x-auto">
@@ -60,16 +60,16 @@
                             {{ $m->dailyPlan?->date->format('h:i:s A') }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ number_format($m->dailyPlan?->quantity, 0) }}
+                            {{ number_format($m->dailyPlan?->quantity ?? 0, 0) }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ number_format($m->dailyPlan?->price, 0) }}
+                            {{ number_format($m->dailyPlan?->price ?? 0, 0) }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ $m->dailyPlan?->total_price??0 }}
+                            {{ $m->dailyPlan?->total_price ?? 0 }}
                         </td>
                         <td class="px-6 py-4">
-                            @if((bool)$m->printed)
+                            @if ((bool) $m->printed)
                                 <p class="text-green-600">Yes</p>
                             @else
                                 <p class="text-rose-700">No</p>
@@ -82,7 +82,7 @@
                             </x-button>
                         </td>
                         <td class="px-6 py-4">
-                            <x-button tag="a" href="{{ route('members.daily.edit',$m->id)}}" type="warning"
+                            <x-button tag="a" href="{{ route('members.daily.edit', $m->id) }}" type="warning"
                                 class="px-3 py-1 rounded inline-flex items-center justify-center">
                                 <i class="fa-regular fa-edit"></i>
                             </x-button>

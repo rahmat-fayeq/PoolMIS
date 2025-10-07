@@ -1,7 +1,7 @@
 <x-layouts.app :title="__('Members')">
 
     <div class="mb-6 flex justify-end items-center">
-        <x-search url="{{ route('members.index') }}" placeholder="Search ..." />
+        <x-search url="{{ route('members.index') }}" placeholder="Search Name, phone ..." />
     </div>
 
     <div class="relative overflow-x-auto">
@@ -45,26 +45,26 @@
                             {{ ($members->currentPage() - 1) * $members->perPage() + $index + 1 }}
                         </th>
                         <td class="px-6 py-4">
-                            {{ $m->name }} <br/>
+                            {{ $m->name }} <br />
                             {{ $m->phone }}
                         </td>
                         <td class="px-6 py-4">
-                            {{ number_format($m->sessionalPlan->price, 0) }}
+                            {{ number_format($m->sessionalPlan->price ?? 0, 0) }}
                         </td>
                         <td class="px-6 py-4">
                             Total Sessions: {{ $m->sessionalPlan->total_sessions }}<br>
                             Remaining: {{ $m->sessionalPlan->remaining_sessions }}
                         </td>
                         <td class="px-6 py-4">
-                            @if((bool)$m->printed)
+                            @if ((bool) $m->printed)
                                 <p class="text-green-600">Yes</p>
                             @else
                                 <p class="text-rose-700">No</p>
                             @endif
                         </td>
                         <td class="px-6 py-4">
-                            <x-button tag="a" href="{{ route('members.sessionalVisit', $m->id) }}"
-                                type="primary" class="px-3 py-1 rounded inline-flex items-center justify-center">
+                            <x-button tag="a" href="{{ route('members.sessionalVisit', $m->id) }}" type="primary"
+                                class="px-3 py-1 rounded inline-flex items-center justify-center">
                                 <i class="fa fa-check-circle" aria-hidden="true"></i>
                             </x-button>
                         </td>
@@ -75,7 +75,7 @@
                             </x-button>
                         </td>
                         <td class="px-6 py-4">
-                            <x-button tag="a" href="{{route('members.sessional.edit', $m->id)}}" type="warning"
+                            <x-button tag="a" href="{{ route('members.sessional.edit', $m->id) }}" type="warning"
                                 class="px-3 py-1 rounded inline-flex items-center justify-center">
                                 <i class="fa-regular fa-edit"></i>
                             </x-button>
